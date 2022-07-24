@@ -9,24 +9,38 @@ const getProducts = asyncHandler(async (req, res) => {
 	res.status(200).json(products);
 })
 
-// Add product
-// POST /api/products
-const addProduct = asyncHandler(async (req, res) => {
-	const reqBody = req.body;
+// Get user products
+// GET /api/products
 
-	if(!reqBody) {
+// TODO: fix
+const getUserProducts = asyncHandler(async (req, res) => {
+	const userProductID = req.user.id;
+	const userProducts = await Product.find({user: userProductID});
+	res.status(200).json(userProducts);
+})
+
+// Add product
+// POST /api/products/
+const addProduct = asyncHandler(async (req, res) => {
+	const {title, description, price} = req.body;
+	const userID = req.user.id;
+
+	if(!title || !description || !price) {
 		res.status(400);
 		throw new Error('Product not found');
 	}
 
-	const product = await Product.create(reqBody);
-
+	const product = await Product.create({
+		title,
+		description,
+		price,
+		userID
+	});
 	res.status(200).json(product);
 })
 
 // Update product
 // PUT /api/products/:id
-// TODO: fix update
 const updateProduct = asyncHandler(async (req, res) => {
 	const reqBody = req.body;
 	const productID = req.params.id;
@@ -62,5 +76,6 @@ module.exports = {
 	getProducts,
 	addProduct,
 	updateProduct,
-	deleteProduct
+	deleteProduct,
+	getUserProducts
 }

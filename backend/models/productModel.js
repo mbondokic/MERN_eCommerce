@@ -7,7 +7,11 @@ const productSchema = new mongoose.Schema({
 	price: {type: Number, required: Boolean},
 	category: {type: String},
 	rating: {type: Number},
-	userId: {type: String}
+	userID: {
+		type: mongoose.Schema.Types.ObjectId,
+		required: true,
+		ref: 'user'
+	}
 },
 {
 	timestamps: true
