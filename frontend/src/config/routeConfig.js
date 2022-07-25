@@ -3,11 +3,14 @@ export const routeConfig = {
 	HOME: {
 		url: '/'
 	},
+	AUTH: {
+		url: '/auth'
+	},
 	LOGIN: {
-		url: '/login'
+		url: 'login'
 	},
 	REGISTER: {
-		url: '/register'
+		url: 'register'
 	},
 	DASHBOARD: {
 		url: '/dashboard'

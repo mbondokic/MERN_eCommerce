@@ -7,7 +7,6 @@ import {Container, Nav, Navbar} from "react-bootstrap";
 // Icons;
 import {GiFlamer} from 'react-icons/gi';
 import {FiLogIn} from "react-icons/fi";
-import {AiOutlineUserAdd} from "react-icons/ai";
 
 const Navigation = () => {
 	return (
@@ -22,13 +21,9 @@ const Navigation = () => {
 						className="ms-auto my-2 my-lg-0"
 						navbarScroll
 					>
-						<Link to={routeConfig.LOGIN.url} className="nav-link">
+						<Link to={routeConfig.AUTH.url} className="nav-link">
 							<FiLogIn className="me-2"/>
 							Login
-						</Link>
-						<Link to={routeConfig.REGISTER.url} className="nav-link">
-							<AiOutlineUserAdd className="me-2"/>
-							Register
 						</Link>
 					</Nav>
 				</Navbar.Collapse>
