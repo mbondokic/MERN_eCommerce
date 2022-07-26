@@ -14,25 +14,34 @@ const Login = () => {
      password: '',
   })
 
-  const loginInputHandler = (e) => {
+  const {username, password} = formData;
 
+  const inputChangeHandler = (e) => {
+    setFormData(prevState => ({
+      ...prevState,
+      [e.target.name]: e.target.value
+    }))
+  }
+
+  const formSubmitHandler = (e) => {
+    e.preventDefault();
   }
 
   return (
-    <FormWrapper className="mx-auto">
+    <FormWrapper className="mx-auto" onSubmit={formSubmitHandler}>
       <Form.Group className="mb-3" controlId="formBasicEmail">
         <FloatingLabel
           controlId="floatingInput"
           label="Email address"
           className="mb-3"
         >
-          <Form.Control type="email" placeholder="Enter email" name="email" onChange={loginInputHandler} />
+          <Form.Control id="email" type="email" placeholder="Enter email" name="email" onChange={inputChangeHandler} />
         </FloatingLabel>
       </Form.Group>
 
       <Form.Group className="mb-3" controlId="formBasicPassword">
         <FloatingLabel controlId="floatingPassword" label="Password">
-          <Form.Control type="password" placeholder="Password" name="password" onChange={loginInputHandler} />
+          <Form.Control id="password" type="password" placeholder="Password" name="password" onChange={inputChangeHandler} />
         </FloatingLabel>
       </Form.Group>
       {isLogin &&
@@ -50,7 +59,7 @@ const Login = () => {
 
 export default Login;
 
-const FormWrapper = styled.div`
+const FormWrapper = styled.form`
   width: 75%;
   a {
     text-decoration: none;
@@ -63,7 +72,7 @@ const FormWrapper = styled.div`
       width: auto;
     }
   }
-  @media (min-width: 768px) {
+  @media (min-width: 992px) {
     width: 25%;
   }
 `
