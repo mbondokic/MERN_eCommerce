@@ -4,8 +4,8 @@ const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
 
 // Register new user
-// POST /api/users
-const registerUser = asyncHandler(async (req, res) => {
+// POST /api/user/register
+const registerUser = async (req, res) => {
 	const {username, email, password} = req.body;
 
 	// Check required fields
@@ -14,40 +14,59 @@ const registerUser = asyncHandler(async (req, res) => {
 		throw new Error('Please fill required fields.');
 	}
 
-	// Check if user exists
-	const userExists = await User.findOne({email});
-	if(userExists) {
-		res.status(400);
-		throw new Error('User already exists.');
-	}
+	User.findOne({email}, async (error, data) => {
+		if(error) {
+			console.log(error);
+			res.send(error);
+			return;
+		}
+
+		// Check if user exists
+		if(data) {
+			res.status(401);
+			res.send('User already exists.');
+		} else {
+			const user = await User.create({
+				username,
+				email,
+				password
+			});
+			res.send(user || 'User not registered.');
+		}
+	});
+
+	// if(userExists) {
+	// 	res.status(401);
+	// 	throw new Error('User already exists.');
+	// }
 
 	// Hash password
-	const salt = await bcrypt.genSalt(10);
-	const hash = await bcrypt.hash(password, salt);
+	// const salt = await bcrypt.genSalt(10);
+	// const hash = await bcrypt.hash(password, salt);
+	//
+	// // Create user
+	// const user = await User.create({
+	// 	username,
+	// 	email,
+	// 	password: hash
+	// })
+	//
+	// if(user) {
+	// 	res.status(201).json({
+	// 		_id: user.id,
+	// 		username: user.username,
+	// 		email: user.email,
+	// 	 	token: generateToken(user._id)
+	// 	})
+	// } else {
+	// 	res.status(400);
+	// 	throw new Error('Invalid user data.')
+	// }
 
-	// Create user
-	const user = await User.create({
-		username,
-		email,
-		password: hash
-	})
-
-	if(user) {
-		res.status(201).json({
-			_id: user.id,
-			username: user.username,
-			email: user.email,
-		 	token: generateToken(user._id)
-		})
-	} else {
-		res.status(400);
-		throw new Error('Invalid user data.')
-	}
-
-})
+}
 
 // Authenticate user
-// POST /api/users/login
+// POST /api/user/login
 const loginUser = asyncHandler(async (req, res) => {
 	const {email, password} = req.body;
 

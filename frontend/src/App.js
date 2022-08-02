@@ -1,5 +1,6 @@
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import {routeConfig} from "./config/routeConfig";
+import axios from "axios";
 
 // Pages
 import Login from "./components/Auth/Login";
@@ -8,6 +9,8 @@ import Navigation from "./components/Navigation";
 import Auth from "./pages/Auth";
 import Home from "./pages/Home";
 
+axios.defaults.baseURL = 'http://localhost:4000';
+
 function App() {
   return (
     <>
@@ -15,7 +18,7 @@ function App() {
         <div className="container">
           <Navigation />
           <Routes>
-            <Route path={routeConfig.HOME.url} element={<Home />} />
+            <Route index path={routeConfig.HOME.url} element={<Home />} />
             <Route path={routeConfig.AUTH.url} element={<Auth/>}>
               <Route index element={<Login />}/>
               <Route path={routeConfig.REGISTER.url} element={<Register />} />

@@ -1,25 +1,31 @@
 import React, {useState} from "react";
 import styled from 'styled-components';
-import {useOutletContext} from 'react-router-dom';
+import {useOutletContext, useNavigate} from 'react-router-dom';
 // Bootstrap components
 import {FloatingLabel, Form} from 'react-bootstrap'
-
 // Custom components
 import PrimaryBtn from '../PrimaryBtn';
+// Notifications
+import toast, {Toaster} from 'react-hot-toast';
+import UserService from "../../services/userService";
+import {routeConfig} from "../../config/routeConfig";
 
 const Login = () => {
 	const [isLogin] = useOutletContext();
-	const [formData, setFormData] = useState({
-																						 username: '',
-																						 email: '',
-																						 password: '',
-																						 repeatPassword: ''
-																					 })
+	const [userData, setUserData] = useState({
+		username: '',
+		email: '',
+		password: ''
+	})
+	const [isFormValid, setIsFormValid] = useState(true);
+	const [emptyForm, setIsEmptyForm] = useState(false);
 
-	const {username, email, password, repeatPassword} = formData;
+	const {username, email, password} = userData;
+
+	const navigate = useNavigate();
 
 	const inputChangeHandler = (e) => {
-		setFormData(prevState => ({
+		setUserData(prevState => ({
 			...prevState,
 			[e.target.name]: e.target.value
 		}))
@@ -27,6 +33,30 @@ const Login = () => {
 
 	const formSubmitHandler = (e) => {
 		e.preventDefault();
+
+		if (!username || !email || !email.includes('@') || !password) {
+			setIsFormValid(false);
+			setIsEmptyForm(true);
+			toast.error("Please fill required fields.");
+			return;
+		}
+
+		setIsFormValid(true);
+
+		UserService.register(userData)
+			.then(res => {
+				if (res && res.status === 200) {
+					console.log(res);
+					toast.success('Successfully registered!');
+					setTimeout(() => {
+						navigate(routeConfig.HOME.url);
+					}, 2000)
+				}
+			})
+			.catch(error => {
+				console.log(error);
+				toast.error("User already exists.");
+			})
 	}
 
 	return (
@@ -35,37 +65,44 @@ const Login = () => {
 				<FloatingLabel
 					controlId="username"
 					label="Username"
-					className="mb-3"
 				>
-					<Form.Control id="username" type="text" placeholder="Username" name="username" onChange={inputChangeHandler}/>
+					<Form.Control type="text" placeholder="Username" name="username" className={emptyForm ? 'border-danger' : ''}
+												onChange={inputChangeHandler}/>
 				</FloatingLabel>
+				{emptyForm &&
+					<Form.Text className="text-danger">
+						Required field.
+					</Form.Text>
+				}
 			</Form.Group>
 
 			<Form.Group className="mb-3" controlId="email">
 				<FloatingLabel controlId="email" label="Email">
-					<Form.Control id="email" type="email" placeholder="Email" name="email" onChange={inputChangeHandler}/>
+					<Form.Control type="email" placeholder="Email" name="email" className={emptyForm ? 'border-danger' : ''}
+												onChange={inputChangeHandler}/>
 				</FloatingLabel>
+				{emptyForm &&
+					<Form.Text className="text-danger">
+						Required field.
+					</Form.Text>
+				}
 			</Form.Group>
 
 			<Form.Group className="mb-3" controlId="password">
 				<FloatingLabel controlId="password" label="Password">
-					<Form.Control id="password"
+					<Form.Control className={emptyForm ? 'border-danger' : ''}
 												type="password"
 												placeholder="Password"
 												name="password"
 												onChange={inputChangeHandler}/>
 				</FloatingLabel>
+				{emptyForm &&
+					<Form.Text className="text-danger">
+						Required field.
+					</Form.Text>
+				}
 			</Form.Group>
 
-			<Form.Group className="mb-3" controlId="repeatPassword">
-				<FloatingLabel controlId="repeatPassword" label="Repeat password">
-					<Form.Control id="repeatPassword"
-												type="password"
-												placeholder="Repeat password"
-												name="repeatPassword"
-												onChange={inputChangeHandler}/>
-				</FloatingLabel>
-			</Form.Group>
 			{isLogin &&
 				<Form.Group className="mb-3" controlId="rememberMe">
 					<Form.Check type="checkbox" label="Remember me"/>
@@ -75,6 +112,7 @@ const Login = () => {
 			<div className="d-block w-100">
 				<PrimaryBtn variant="primary" type="submit" buttonText="Register"/>
 			</div>
+			<Toaster/>
 		</FormWrapper>
 	)
 };

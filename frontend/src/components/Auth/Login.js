@@ -35,13 +35,13 @@ const Login = () => {
           label="Email address"
           className="mb-3"
         >
-          <Form.Control id="email" type="email" placeholder="Enter email" name="email" onChange={inputChangeHandler} />
+          <Form.Control type="email" placeholder="Enter email" name="email" onChange={inputChangeHandler} />
         </FloatingLabel>
       </Form.Group>
 
       <Form.Group className="mb-3" controlId="formBasicPassword">
         <FloatingLabel controlId="floatingPassword" label="Password">
-          <Form.Control id="password" type="password" placeholder="Password" name="password" onChange={inputChangeHandler} />
+          <Form.Control type="password" placeholder="Password" name="password" onChange={inputChangeHandler} />
         </FloatingLabel>
       </Form.Group>
       {isLogin &&
