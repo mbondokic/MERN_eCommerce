@@ -12,7 +12,7 @@ const Navigation = () => {
 	return (
 		<StyledNav expand="lg" className='navigation'>
 			<Container fluid>
-				<Navbar.Brand href="#">
+				<Navbar.Brand as={Link} to={routeConfig.HOME.url}>
 					<GiFlamer />
 				</Navbar.Brand>
 				<Navbar.Toggle aria-controls="navbarScroll" />

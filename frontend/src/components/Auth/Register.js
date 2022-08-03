@@ -19,6 +19,7 @@ const Login = () => {
 	})
 	const [isFormValid, setIsFormValid] = useState(true);
 	const [emptyForm, setIsEmptyForm] = useState(false);
+	const [success, setSuccess] = useState(false);
 
 	const {username, email, password} = userData;
 
@@ -40,16 +41,16 @@ const Login = () => {
 			toast.error("Please fill required fields.");
 			return;
 		}
-
 		setIsFormValid(true);
 
 		UserService.register(userData)
 			.then(res => {
 				if (res && res.status === 200) {
 					console.log(res);
+					setSuccess(true);
 					toast.success('Successfully registered!');
 					setTimeout(() => {
-						navigate(routeConfig.HOME.url);
+						navigate(routeConfig.USER_ACTIVATE.url);
 					}, 2000)
 				}
 			})

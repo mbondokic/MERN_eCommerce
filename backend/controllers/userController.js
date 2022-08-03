@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
+// const bcrypt = require('bcryptjs');
 const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
+const nodemailer = require("nodemailer");
 
 // Register new user
 // POST /api/user/register
@@ -31,6 +32,10 @@ const registerUser = async (req, res) => {
 				email,
 				password
 			});
+
+			// Send activation link to email
+			await sendActivationLink(email, username, user);
+
 			res.send(user || 'User not registered.');
 		}
 	});
@@ -65,28 +70,71 @@ const registerUser = async (req, res) => {
 
 }
 
+const sendActivationLink = async (email, username, user) => {
+	let testAccount = await nodemailer.createTestAccount();
+
+	let transporter = nodemailer.createTransport({
+		host: "smtp.ethereal.email",
+		port: 587,
+		secure: false, // true for 465, false for other ports
+		auth: {
+			user: testAccount.user, // generated ethereal user
+			pass: testAccount.pass, // generated ethereal password
+		},
+	});
+
+	let info = await transporter.sendMail({
+		from: '"Fred Foo 👻" <office@onlineShop.com>', // sender address
+		to: email, // list of receivers
+		subject: "Activate account", // Subject line
+		text: "", // plain text body
+		html: `
+            <h1>Activate account</h1>
+            <p>Dear, ${username}</p>
+            <p>Please click on link bellow to activate your account</p>
+            <a href="http://localhost:3000/user-activate/${user._id.toString()}" target="_blank">Activate account</a>
+            `, // html body
+	});
+
+	console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
+}
+
+// Complete registration
+// POST /api/complete-registration
+const completeRegistration = (req, res) => {
+	const {userID} = req.body;
+	User.updateOne({_id: userID}, {isActive: true}, (error, data) => {
+		if(error) {
+			console.log(error);
+			res.send(error);
+		} else {
+			res.send(data);
+		}
+	})
+}
+
 // Authenticate user
 // POST /api/user/login
-const loginUser = asyncHandler(async (req, res) => {
+const loginUser = async (req, res) => {
 	const {email, password} = req.body;
 
-	// Check email
-	const user = await User.findOne({email});
+	// // Check email
+	// const user = await User.findOne({email});
+	//
+	// // Check password
+	// if(user && (await bcrypt.compare(password, user.password))) {
+	// 	res.json({
+	// 	 _id: user.id,
+	// 	 username: user.username,
+	// 	 email: user.email,
+	// 	 token: generateToken(user._id)
+	//  })
+	// } else {
+	// 	res.status(400);
+	// 	throw new Error('Invalid credentials.')
+	// }
 
-	// Check password
-	if(user && (await bcrypt.compare(password, user.password))) {
-		res.json({
-		 _id: user.id,
-		 username: user.username,
-		 email: user.email,
-		 token: generateToken(user._id)
-	 })
-	} else {
-		res.status(400);
-		throw new Error('Invalid credentials.')
-	}
-
-})
+}
 
 // Get user data
 // GET /api/users/userToken
@@ -108,5 +156,6 @@ const generateToken = (id) => {
 module.exports = {
 	registerUser,
 	loginUser,
-	getUserData
+	getUserData,
+	completeRegistration
 }
