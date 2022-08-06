@@ -2,10 +2,12 @@ import {createSlice} from '@reduxjs/toolkit';
 
 // Get user from localStorage
 const user = JSON.parse(localStorage.getItem('user'));
+const token = JSON.parse(localStorage.getItem('token'));
 
 // Initial state
 const initialState = {
 	user: user ? user : null,
+	token: token ? token : null,
 	// isError: false,
 	// isSuccess: false,
 	// isLoading: false,

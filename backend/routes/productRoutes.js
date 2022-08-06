@@ -7,10 +7,10 @@ const {protect} = require("../middleware/authMiddleware");
 router.get('/', getProducts);
 
 // Get user products
-router.get('/:productID', protect, getUserProducts);
+router.get('/my-products', protect, getUserProducts);
 
 // Add product
-router.post('/', protect, addProduct);
+router.post('/add-product', protect, addProduct);
 
 // Update product
 router.put('/:id', protect, updateProduct);

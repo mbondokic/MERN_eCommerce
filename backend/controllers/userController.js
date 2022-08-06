@@ -1,75 +1,56 @@
 const jwt = require('jsonwebtoken');
-// const bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs');
 const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
 const nodemailer = require("nodemailer");
 
 // Register new user
 // POST /api/user/register
-const registerUser = async (req, res) => {
+const registerUser =  asyncHandler(async (req, res) => {
 	const {username, email, password} = req.body;
 
-	// Check required fields
+	// Check for empty fields
 	if(!username || !email || !password) {
 		res.status(400);
-		throw new Error('Please fill required fields.');
+		throw new Error('Please fill all fields.');
 	}
 
-	User.findOne({email}, async (error, data) => {
-		if(error) {
-			console.log(error);
-			res.send(error);
-			return;
-		}
+	// Check if user exists
+	const userExists = await User.findOne({email});
+	if(userExists) {
+		res.status(400);
+		throw new Error('User already exists.');
+	}
 
-		// Check if user exists
-		if(data) {
-			res.status(401);
-			res.send('User already exists.');
-		} else {
-			const user = await User.create({
-				username,
-				email,
-				password
-			});
+	// Hash the password
+	const salt = await bcrypt.genSalt(10);
+	const hashedPassword = await bcrypt.hash(password, salt);
 
-			// Send activation link to email
-			await sendActivationLink(email, username, user);
+	// Create new user
+	const user = await User.create({
+		username,
+		email,
+		password: hashedPassword
+	})
 
-			res.send(user || 'User not registered.');
-		}
-	});
+	if(user) {
+		res.status(201).json({
+			_id: user.id,
+			username: user.username,
+			email: user.email,
+		 	token: generateToken(user._id)
+		});
+	} else {
+		res.status(400);
+		throw new Error('Invalid user data');
+	}
 
-	// if(userExists) {
-	// 	res.status(401);
-	// 	throw new Error('User already exists.');
-	// }
+	// Send activation link
+	await sendActivationLink(email, username, user);
 
-	// Hash password
-	// const salt = await bcrypt.genSalt(10);
-	// const hash = await bcrypt.hash(password, salt);
-	//
-	// // Create user
-	// const user = await User.create({
-	// 	username,
-	// 	email,
-	// 	password: hash
-	// })
-	//
-	// if(user) {
-	// 	res.status(201).json({
-	// 		_id: user.id,
-	// 		username: user.username,
-	// 		email: user.email,
-	// 	 	token: generateToken(user._id)
-	// 	})
-	// } else {
-	// 	res.status(400);
-	// 	throw new Error('Invalid user data.')
-	// }
+})
 
-}
-
+// Send activation link after registration
 const sendActivationLink = async (email, username, user) => {
 	let testAccount = await nodemailer.createTestAccount();
 
@@ -100,7 +81,7 @@ const sendActivationLink = async (email, username, user) => {
 }
 
 // Complete registration
-// POST /api/complete-registration
+// POST /api/users/complete-registration
 const completeRegistration = (req, res) => {
 	const {userID} = req.body;
 	User.updateOne({_id: userID}, {isActive: true}, (error, data) => {
@@ -114,31 +95,35 @@ const completeRegistration = (req, res) => {
 }
 
 // Authenticate user
-// POST /api/user/login
-const loginUser = async (req, res) => {
+// POST /api/users/login
+const loginUser = asyncHandler(async (req, res) => {
 	const {email, password} = req.body;
 
-	// // Check email
-	// const user = await User.findOne({email});
-	//
-	// // Check password
-	// if(user && (await bcrypt.compare(password, user.password))) {
-	// 	res.json({
-	// 	 _id: user.id,
-	// 	 username: user.username,
-	// 	 email: user.email,
-	// 	 token: generateToken(user._id)
-	//  })
-	// } else {
-	// 	res.status(400);
-	// 	throw new Error('Invalid credentials.')
-	// }
+	// Check user email
+	const user = await User.findOne({email});
 
+	// Compare login and hashed password
+	if(user && (await bcrypt.compare(password, user.password))) {
+		res.json({
+		 	_id: user.id,
+		 	username: user.username,
+		 	email: user.email,
+			token: generateToken(user._id)
+		})
+	} else {
+		res.status(400);
+		throw new Error('Invalid email or password.');
+	}
+})
+
+// Generate token
+const generateToken = (id) => {
+	return jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: '30d'}, null)
 }
 
 // Get user data
-// GET /api/users/userToken
-const getUserData = asyncHandler(async (req, res) => {
+// GET /api/users/get-users-data
+const getUsersData = asyncHandler(async (req, res) => {
 	const userID = req.user.id;
 	const {_id, username, email} = await User.findById(userID);
 	res.status(200).json({
@@ -148,14 +133,9 @@ const getUserData = asyncHandler(async (req, res) => {
 	})
 })
 
-// Generate jwt token
-const generateToken = (id) => {
-	return jwt.sign({id}, process.env.JWT_SECRET, null, null)
-}
-
 module.exports = {
 	registerUser,
 	loginUser,
-	getUserData,
+	getUsersData,
 	completeRegistration
 }

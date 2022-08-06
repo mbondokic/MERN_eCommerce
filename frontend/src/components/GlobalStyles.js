@@ -11,6 +11,13 @@ export const GlobalStyles = createGlobalStyle`
     overflow: scroll;
     overflow-x: hidden;
   }
+  
+  // Links
+  .link {
+  	color: #805ad5;
+		text-decoration: none;
+		font-weight: 500;
+  }
 
   // bootstrap from
   .form-control {

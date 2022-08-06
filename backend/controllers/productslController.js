@@ -1,8 +1,9 @@
 const asyncHandler = require("express-async-handler");
 
 const Product = require('../models/productModel');
+const User = require('../models/userModel');
 
-// Get all products
+// Get all products from all users
 // GET /api/products
 const getProducts = asyncHandler(async (req, res) => {
 	const products = await Product.find();
@@ -10,17 +11,15 @@ const getProducts = asyncHandler(async (req, res) => {
 })
 
 // Get user products
-// GET /api/products
-
-// TODO: fix
+// GET /api/my-products
 const getUserProducts = asyncHandler(async (req, res) => {
 	const userProductID = req.user.id;
-	const userProducts = await Product.find({user: userProductID});
+	const userProducts = await Product.find({userID: userProductID});
 	res.status(200).json(userProducts);
 })
 
 // Add product
-// POST /api/products/
+// POST /api/products/add-product
 const addProduct = asyncHandler(async (req, res) => {
 	const {title, description, price} = req.body;
 	const userID = req.user.id;
@@ -34,7 +33,7 @@ const addProduct = asyncHandler(async (req, res) => {
 		title,
 		description,
 		price,
-		userID
+	 	userID: userID
 	});
 	res.status(200).json(product);
 })
@@ -44,11 +43,25 @@ const addProduct = asyncHandler(async (req, res) => {
 const updateProduct = asyncHandler(async (req, res) => {
 	const reqBody = req.body;
 	const productID = req.params.id;
+	const userID = req.user.id;
 	const product = await Product.findById(productID);
 
 	if(!product) {
 		res.status(400);
 		throw new Error('Product not found.');
+	}
+
+	// Check for user
+	const user = await User.findById(userID);
+	if(!user) {
+		res.status(401);
+		throw new Error('User not found.');
+	}
+
+	// Logged-in user can update own product
+	if(product.userID.toString() !== user.id) {
+		res.status(401);
+		throw new Error('User not authorized.');
 	}
 
 	const updatedProduct = await Product.findByIdAndUpdate(productID, reqBody, {new: true});
@@ -60,11 +73,25 @@ const updateProduct = asyncHandler(async (req, res) => {
 // DELETE /api/products/:id
 const deleteProduct = asyncHandler(async (req, res) => {
 	const productID = req.params.id;
+	const userID = req.user.id;
 	const product = await Product.findById(productID);
 
 	if(!product) {
 		res.status(400);
 		throw new Error('Product not found.');
+	}
+
+	// Check for user
+	const user = await User.findById(userID);
+	if(!user) {
+		res.status(401);
+		throw new Error('User not found.');
+	}
+
+	// Logged-in user can update own product
+	if(product.userID.toString() !== user.id) {
+		res.status(401);
+		throw new Error('User not authorized.');
 	}
 
 	await product.remove();

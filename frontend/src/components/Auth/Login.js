@@ -1,23 +1,30 @@
 import React, {useState} from "react";
 import styled from 'styled-components';
-import {Link, useOutletContext} from 'react-router-dom';
+import {Link, useNavigate, useOutletContext} from 'react-router-dom';
+import {useDispatch} from "react-redux";
+import UserService from "../../services/userService";
+import {setUser} from "../../redux/userSlice";
 // Bootstrap components
 import {FloatingLabel, Form} from 'react-bootstrap'
-
-// Custom components
+// Components
 import PrimaryBtn from '../PrimaryBtn';
+import toast, {Toaster} from "react-hot-toast";
+
 
 const Login = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [isLogin] = useOutletContext();
-  const [formData, setFormData] = useState({
+  const [userData, setUserData] = useState({
      username: '',
      password: '',
   })
+  const {username, password} = userData;
 
-  const {username, password} = formData;
+  const [isFormValid, setIsFormValid] = useState(true);
 
   const inputChangeHandler = (e) => {
-    setFormData(prevState => ({
+    setUserData(prevState => ({
       ...prevState,
       [e.target.name]: e.target.value
     }))
@@ -25,17 +32,36 @@ const Login = () => {
 
   const formSubmitHandler = (e) => {
     e.preventDefault();
+    if(!username || !password) {
+      setIsFormValid(false);
+      return;
+    }
+    setIsFormValid(true);
+
+    UserService.login(userData)
+      .then(res => {
+        if(res && res.status === 200) {
+          localStorage.setItem('user', JSON.stringify(res.data.user));
+          localStorage.setItem('token', JSON.stringify(res.data.token));
+          dispatch(setUser(res.data.user));
+        } else {
+          toast.success(res.data);
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      })
   }
 
   return (
-    <FormWrapper className="mx-auto" onSubmit={formSubmitHandler}>
-      <Form.Group className="mb-3" controlId="formBasicEmail">
+    <FormWrapper className="mx-auto" onSubmit={formSubmitHandler} method="post">
+      <Form.Group className="mb-3" controlId="username">
         <FloatingLabel
           controlId="floatingInput"
-          label="Email address"
+          label="Username"
           className="mb-3"
         >
-          <Form.Control type="email" placeholder="Enter email" name="email" onChange={inputChangeHandler} />
+          <Form.Control type="text" placeholder="Username" name="username" onChange={inputChangeHandler} />
         </FloatingLabel>
       </Form.Group>
 
@@ -51,8 +77,9 @@ const Login = () => {
         </Form.Group>
       }
       <div className="d-block w-100">
-        <PrimaryBtn variant="primary" type="submit" buttonText="Login" />
+        <PrimaryBtn variant="primary" buttonText="Login" />
       </div>
+      <Toaster/>
     </FormWrapper>
   )
 };
