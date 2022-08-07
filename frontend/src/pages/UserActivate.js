@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Link, useNavigate, useParams} from "react-router-dom";
-import {routeConfig} from "../../config/routeConfig";
-import UserService from "../../services/userService";
+import {routeConfig} from "../config/routeConfig";
+import UserService from "../services/userService";
 import styled from 'styled-components';
 
 const UserActivate = () => {

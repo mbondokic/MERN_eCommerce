@@ -1,17 +1,32 @@
 import axios from 'axios';
 
-class UserService {
-	static register(body) {
-		return axios.post('/api/users/register', body);
-	}
+const API_URL = '/api/users';
 
-	static completeRegistration(body) {
-		return axios.post('/api/users/complete-registration', body);
-	}
-
-	static login(body) {
-		return axios.post('/api/users/login', body);
-	}
+// Register user
+const register = async (userData) => {
+	return await axios.post(`${API_URL}/register`, userData);
 }
 
-export default UserService;
+// Complete registration (activation email)
+const completeRegistration = async(userData) => {
+	return await axios.post(`${API_URL}/complete-registration`, userData);
+}
+
+// Login user
+const login = async (userData) => {
+	return await axios.post(`${API_URL}/login`, userData);
+}
+
+// Logout
+const logout = () => {
+	localStorage.removeItem('user');
+}
+
+const userService = {
+	register,
+	completeRegistration,
+	login,
+	logout
+}
+
+export default userService;

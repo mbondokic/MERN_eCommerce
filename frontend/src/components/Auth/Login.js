@@ -1,27 +1,42 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import styled from 'styled-components';
 import {Link, useNavigate, useOutletContext} from 'react-router-dom';
-import {useDispatch} from "react-redux";
-import UserService from "../../services/userService";
-import {setUser} from "../../redux/userSlice";
+import {useDispatch, useSelector} from "react-redux";
+import {routeConfig} from "../../config/routeConfig";
+import {login, reset} from "../../redux/userSlice";
 // Bootstrap components
 import {FloatingLabel, Form} from 'react-bootstrap'
 // Components
 import PrimaryBtn from '../PrimaryBtn';
-import toast, {Toaster} from "react-hot-toast";
+import toast from "react-hot-toast";
+import Loader from "../Loader";
 
 
 const Login = () => {
+  const [isLogin] = useOutletContext();
+  const {user, isLoading, isError, isSuccess, message} = useSelector(state => state.userStore);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [isLogin] = useOutletContext();
   const [userData, setUserData] = useState({
-     username: '',
+     email: '',
      password: '',
   })
-  const {username, password} = userData;
+  const {username, email, password} = userData;
 
   const [isFormValid, setIsFormValid] = useState(true);
+
+  useEffect(() => {
+    if(isError) {
+      toast.error(message);
+    }
+
+    if(isSuccess || user) {
+      toast.success(`Welcome, ${username}!`);
+      navigate(routeConfig.HOME.url);
+    }
+
+    dispatch(reset());
+  }, [user, isError, isSuccess, message, navigate, dispatch]);
 
   const inputChangeHandler = (e) => {
     setUserData(prevState => ({
@@ -32,54 +47,49 @@ const Login = () => {
 
   const formSubmitHandler = (e) => {
     e.preventDefault();
-    if(!username || !password) {
-      setIsFormValid(false);
-      return;
-    }
-    setIsFormValid(true);
 
-    UserService.login(userData)
-      .then(res => {
-        if(res && res.status === 200) {
-          localStorage.setItem('user', JSON.stringify(res.data.user));
-          localStorage.setItem('token', JSON.stringify(res.data.token));
-          dispatch(setUser(res.data.user));
-        } else {
-          toast.success(res.data);
-        }
-      })
-      .catch(error => {
-        console.log(error);
-      })
+    const userData = {
+      email,
+      password
+    }
+
+    dispatch(login(userData));
+  }
+
+  if(isLoading) {
+    return <Loader />;
+  }
+
+  const rememberMeHandler = () => {
+    // TODO: save in localStorage
   }
 
   return (
     <FormWrapper className="mx-auto" onSubmit={formSubmitHandler} method="post">
-      <Form.Group className="mb-3" controlId="username">
+      <Form.Group className="mb-3" controlId="email">
         <FloatingLabel
           controlId="floatingInput"
-          label="Username"
+          label="* Email"
           className="mb-3"
         >
-          <Form.Control type="text" placeholder="Username" name="username" onChange={inputChangeHandler} />
+          <Form.Control type="email" placeholder="Email" name="email" onChange={inputChangeHandler} />
         </FloatingLabel>
       </Form.Group>
 
       <Form.Group className="mb-3" controlId="formBasicPassword">
-        <FloatingLabel controlId="floatingPassword" label="Password">
+        <FloatingLabel controlId="floatingPassword" label="* Password">
           <Form.Control type="password" placeholder="Password" name="password" onChange={inputChangeHandler} />
         </FloatingLabel>
       </Form.Group>
       {isLogin &&
         <Form.Group className="mb-3" controlId="formBasicCheckbox">
-          <Form.Check type="checkbox" label="Remember me" />
+          <Form.Check type="checkbox" label="Remember me" onChange={rememberMeHandler} />
           <Link to="/password-reset" className="mt-3">Forgot your password?</Link>
         </Form.Group>
       }
       <div className="d-block w-100">
         <PrimaryBtn variant="primary" buttonText="Login" />
       </div>
-      <Toaster/>
     </FormWrapper>
   )
 };
