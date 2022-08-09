@@ -8,8 +8,13 @@ const protect = asyncHandler(async (req, res, next) => {
 
 	if(auth && auth.startsWith('Bearer')) {
 		try{
+			// Get token from header
 			token = auth.split(' ')[1];
-			const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+			// Verify token
+			const decoded = jwt.verify(token, process.env.JWT_SECRET, null, null);
+
+			// GEt user from token
 			req.user = await User.findById(decoded.id).select('-password');
 			next();
 		} catch (error) {
@@ -19,6 +24,7 @@ const protect = asyncHandler(async (req, res, next) => {
 		}
 	}
 
+	// Check if token exists
 	if(!token) {
 		res.status(401);
 		throw new Error('Not authorized, no token.');

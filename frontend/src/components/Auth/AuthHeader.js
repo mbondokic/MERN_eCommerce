@@ -19,8 +19,8 @@ const AuthHeader = ({isLogin, setIsLogin}) => {
 					{isLogin ? 'Don\'t have an account yet?' : 'Already have an account?'}
 					<span className="login-register ms-1" onClick={() => setIsLogin(!isLogin)}>
             {isLogin ?
-							<Link to={routeConfig.REGISTER.url}>Register</Link> :
-							<Link to="">Login</Link>
+							<Link to={routeConfig.REGISTER.url} className='link'>Register</Link> :
+							<Link to="" className='link'>Login</Link>
 						}
           </span>
 				</p>
@@ -38,13 +38,6 @@ const AuthHeaderWrapper = styled.div`
       font-size: 3rem;
       width: 100%;
       margin: 0 auto;
-    }
-    .login-register {
-      a {
-        color: #805ad5;
-        text-decoration: none;
-        font-weight: 500;
-      }
     }
   }
 `
