@@ -19,5 +19,14 @@ export const routeConfig = {
 	},
 	DASHBOARD: {
 		url: '/dashboard'
-	}
+	},
+	MY_PROFILE: {
+		url: '/my-profile',
+	},
+	MY_PRODUCTS: {
+		url: '/my-products',
+	},
+	SHOP: {
+		url: '/shop'
+	},
 }

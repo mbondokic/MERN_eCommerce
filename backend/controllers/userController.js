@@ -108,7 +108,9 @@ const loginUser = asyncHandler(async (req, res) => {
 		 	_id: user.id,
 		 	username: user.username,
 		 	email: user.email,
-			token: generateToken(user._id)
+			token: generateToken(user._id),
+			isActive: user.isActive,
+			isAdmin: user.isAdmin
 		})
 	} else {
 		res.status(400);

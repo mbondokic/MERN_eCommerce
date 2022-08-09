@@ -18,12 +18,12 @@ const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [userData, setUserData] = useState({
-     email: '',
-     password: '',
-  })
-  const {username, email, password} = userData;
+    email: '',
+    password: '',
+  });
+  const [rememberMe, setRememberMe] = useState(false);
+  const { email, password} = userData;
 
-  const [isFormValid, setIsFormValid] = useState(true);
 
   useEffect(() => {
     if(isError) {
@@ -31,7 +31,7 @@ const Login = () => {
     }
 
     if(isSuccess || user) {
-      toast.success(`Welcome, ${username}!`);
+      toast.success(`Welcome!`);
       navigate(routeConfig.HOME.url);
     }
 
@@ -50,7 +50,7 @@ const Login = () => {
 
     const userData = {
       email,
-      password
+      password,
     }
 
     dispatch(login(userData));
@@ -61,7 +61,7 @@ const Login = () => {
   }
 
   const rememberMeHandler = () => {
-    // TODO: save in localStorage
+
   }
 
   return (
