@@ -52,14 +52,13 @@ const updateProduct = asyncHandler(async (req, res) => {
 	}
 
 	// Check for user
-	const user = await User.findById(userID);
-	if(!user) {
+	if(!req.user) {
 		res.status(401);
 		throw new Error('User not found.');
 	}
 
 	// Logged-in user can update own product
-	if(product.userID.toString() !== user.id) {
+	if(product.user.toString() !== userID) {
 		res.status(401);
 		throw new Error('User not authorized.');
 	}
@@ -82,14 +81,13 @@ const deleteProduct = asyncHandler(async (req, res) => {
 	}
 
 	// Check for user
-	const user = await User.findById(userID);
-	if(!user) {
+	if(!req.user) {
 		res.status(401);
 		throw new Error('User not found.');
 	}
 
 	// Logged-in user can update own product
-	if(product.userID.toString() !== user.id) {
+	if(product.user.toString() !== userID) {
 		res.status(401);
 		throw new Error('User not authorized.');
 	}

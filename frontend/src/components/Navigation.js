@@ -52,7 +52,7 @@ const Navigation = () => {
 										My products
 									</NavDropdown.Item>
 									{user.isAdmin === 'true' &&
-										<NavDropdown.Item as={Link} to={routeConfig.HOME.url}>Dashboard</NavDropdown.Item>
+										<NavDropdown.Item as={Link} to={routeConfig.DASHBOARD.url}>Dashboard</NavDropdown.Item>
 									}
 									<NavDropdown.Item as={Link} to={routeConfig.HOME.url} onClick={logoutHandler}>
 										<FiLogOut className="me-2"/>

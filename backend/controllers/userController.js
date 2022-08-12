@@ -126,13 +126,7 @@ const generateToken = (id) => {
 // Get user data
 // GET /api/users/get-users-data
 const getUsersData = asyncHandler(async (req, res) => {
-	const userID = req.user.id;
-	const {_id, username, email} = await User.findById(userID);
-	res.status(200).json({
-		id: _id,
-		username,
-		email
-	})
+	res.status(200).json(req.user);
 })
 
 module.exports = {

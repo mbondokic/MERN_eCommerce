@@ -16,6 +16,7 @@ import UserActivate from "./pages/UserActivate";
 import UserProfile from "./pages/UserProfile";
 import Shop from "./pages/Shop";
 import UserProducts from "./pages/UserProducts";
+import Dashboard from "./pages/Dashboard";
 
 axios.defaults.baseURL = 'http://localhost:4000';
 
@@ -51,6 +52,7 @@ function App() {
 					<Route path={routeConfig.MY_PROFILE.url} element={<UserProfile/>}/>
 					<Route path={routeConfig.MY_PRODUCTS.url} element={<UserProducts/>}/>
 					<Route path={routeConfig.SHOP.url} element={<Shop/>}/>
+					<Route path={routeConfig.DASHBOARD.url} element={<Dashboard/>}/>
 				</Routes>
 			</div>
 			<Toaster/>
