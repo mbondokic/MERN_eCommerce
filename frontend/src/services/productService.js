@@ -14,8 +14,21 @@ const addProduct = async (productData, token) => {
 	return response.data;
 }
 
+// Get my products
+const getMyProducts = async (token) => {
+	const config = {
+		headers: {
+			Authorization: `Bearer ${token}`
+		}
+	}
+
+	const response = await axios.get(`${API_URL}/my-products`, config);
+	return response.data;
+}
+
 const productService = {
-	addProduct
+	addProduct,
+	getMyProducts
 }
 
 export default productService;

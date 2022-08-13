@@ -21,7 +21,7 @@ const getUserProducts = asyncHandler(async (req, res) => {
 // Add product
 // POST /api/products/add-product
 const addProduct = asyncHandler(async (req, res) => {
-	const {title, description, price} = req.body;
+	const {title, description, price, imgUrl} = req.body;
 	const userID = req.user.id;
 
 	if(!title || !description || !price) {
@@ -33,7 +33,8 @@ const addProduct = asyncHandler(async (req, res) => {
 		title,
 		description,
 		price,
-	 	userID: userID
+	 	userID: userID,
+	 	imgUrl
 	});
 	res.status(200).json(product);
 })

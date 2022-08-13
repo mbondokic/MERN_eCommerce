@@ -88,7 +88,7 @@ const Login = () => {
         </Form.Group>
       }
       <div className="d-block w-100">
-        <PrimaryBtn variant="primary" buttonText="Login" />
+        <PrimaryBtn variant="primary" buttonContent="Login" />
       </div>
     </FormWrapper>
   )

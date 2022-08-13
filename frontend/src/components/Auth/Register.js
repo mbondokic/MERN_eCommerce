@@ -118,7 +118,7 @@ const Register = () => {
 				</Form.Group>
 			}
 			<div className="d-block w-100">
-				<PrimaryBtn variant="primary" type="submit" buttonText="Register"/>
+				<PrimaryBtn variant="primary" type="submit" buttonContent="Register"/>
 			</div>
 		</FormWrapper>
 	)

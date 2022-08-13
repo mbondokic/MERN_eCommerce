@@ -3,15 +3,17 @@ import {Link, useNavigate, useParams} from "react-router-dom";
 import {routeConfig} from "../config/routeConfig";
 import UserService from "../services/userService";
 import styled from 'styled-components';
+import {useSelector} from "react-redux";
 
 const UserActivate = () => {
+	const {user} = useSelector(state => state.userStore);
 	const navigate = useNavigate();
 	const params = useParams();
 	const [isActivated, setIsActivated] = useState(false);
 	const [isApiFinished, setIsApiFinished] = useState(false);
 
 	useEffect(() => {
-		if(localStorage.hasOwnProperty('user')) {
+		if(localStorage.hasOwnProperty('user') && user.isActive === 'true') {
 			navigate(routeConfig.HOME.url);
 		}else {
 			UserService.completeRegistration({userID: params.id})
@@ -43,7 +45,7 @@ const UserActivate = () => {
 		return !params?.id ?
 			<>
 				<h1>Your registration was successful</h1>
-				<p>An email has been sent to your email address containing an activation link. Please click on the link to activate your account.</p>
+				<p>An email has been sent to <u>{user.email}</u> containing an activation link. Please click on the link to activate your account.</p>
 			</> : null
 	}
 

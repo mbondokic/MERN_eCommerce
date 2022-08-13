@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const PrimaryBtn = ({buttonText, icon, onClick, type, className}) => {
-	return <StyledBtn className={className} type={type} onClick={onClick}>{icon}{buttonText}</StyledBtn>
+const PrimaryBtn = ({buttonContent, icon, onClick, type, className}) => {
+	return <StyledBtn className={className} type={type} onClick={onClick}>{icon}{buttonContent}</StyledBtn>
 }
 
 export default PrimaryBtn;

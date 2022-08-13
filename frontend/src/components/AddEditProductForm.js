@@ -13,7 +13,6 @@ import {addProduct} from '../redux/productSlice';
 const AddEditProductForm = ({show, handleClose}) => {
 	const [product, setProduct] = useState({
 	  imgUrl: defaultProductImg,
-	  // userId: JSON.parse(localStorage.getItem("user")).token,
   });
 
 	const dispatch = useDispatch();
@@ -23,6 +22,9 @@ const AddEditProductForm = ({show, handleClose}) => {
 			...prevState,
 			[e.target.name]: e.target.value
 		}))
+		if(!product.imgUrl) {
+			setProduct(product.imgUrl);
+		}
 	}
 
 	const formSubmitHandler = (e) => {
@@ -88,7 +90,8 @@ const AddEditProductForm = ({show, handleClose}) => {
 							<Form.Control type="text"
 														placeholder="Image URL"
 														name="imgUrl"
-														onChange={handleChange}/>
+														onChange={handleChange}
+														/>
 						</FloatingLabel>
 					</Form.Group>
 					<PrimaryBtn buttonText="Add" type="submit" icon={<BsClipboardPlus/>} className="d-block ms-auto"/>
