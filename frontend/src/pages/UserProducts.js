@@ -22,9 +22,6 @@ const UserProducts = () => {
 	const handleClose = () => setShow(false);
 	const handleShow = () => setShow(true);
 
-	// Product card
-	const [favorite, setFavorite] = useState([]);
-
 	useEffect(() => {
 		if(user.isActive !== 'true') {
 			navigate(routeConfig.USER_ACTIVATE.url);
@@ -55,7 +52,7 @@ const UserProducts = () => {
 					products.map(product => {
 							return (
 								<Col md={4} key={product._id} className="mt-2 mb-3">
-									<ProductCard product={product} favorite={favorite} setFavorite={setFavorite} />
+									<ProductCard product={product} />
 								</Col>
 								)
 						})

@@ -2,20 +2,22 @@ import React from "react";
 import styled from "styled-components";
 import {Card} from "react-bootstrap";
 import { BiExpandAlt, BiShoppingBag } from "react-icons/bi";
-import { MdOutlineFavoriteBorder, MdFavorite } from "react-icons/md";
+import {MdOutlineFavoriteBorder, MdFavorite, MdDeleteOutline} from "react-icons/md";
+import {TbEdit} from "react-icons/tb";
 import PrimaryBtn from "./PrimaryBtn";
 
 const ProductCard = ({product, favorite, setFavorite}) => {
+  // Check for pathname to render buttons
+  const pathname = window.location.pathname;
 
+  // On shop page
   const addFavorite = (product) => {
     setFavorite([...favorite, product]);
   };
-
   const removeFavorite = (product) => {
     const filtered = favorite.filter((item) => item._id !== product._id);
     setFavorite(filtered);
   };
-
   const isFavorite = (product) => {
     return favorite.filter((item) => item._id === product._id).length > 0;
   };
@@ -25,17 +27,25 @@ const ProductCard = ({product, favorite, setFavorite}) => {
       <Card>
         <Header>
           <div className="icon-wrapper">
-            <BiExpandAlt />
+            {pathname === '/shop' ?
+              <BiExpandAlt /> :
+              <TbEdit />
+            }
           </div>
-          <div className="icon-wrapper" onClick={() =>
-            isFavorite(product) ? removeFavorite(product) : addFavorite(product)
-          }>
-            {isFavorite(product) ? (
-              <MdFavorite />
-            ) : (
-              <MdOutlineFavoriteBorder/>
-            )}
-          </div>
+          {pathname === '/shop' ?
+            <div className="icon-wrapper" onClick={() =>
+              isFavorite(product) ? removeFavorite(product) : addFavorite(product)
+            }>
+              {isFavorite(product) ? (
+                <MdFavorite />
+              ) : (
+                <MdOutlineFavoriteBorder/>
+              )}
+            </div> :
+            <div className="icon-wrapper">
+              <MdDeleteOutline/>
+            </div>
+          }
         </Header>
         <Card.Img variant="top" src={product.imgUrl} />
         <Card.Body>
@@ -46,11 +56,12 @@ const ProductCard = ({product, favorite, setFavorite}) => {
             <Price>
               <p className="mb-0 text-muted fw-bold">Price</p>
               <p>
-                {" "}
-                <strong>$ {product.price}</strong>{" "}
+                <strong>$ {product.price}</strong>
               </p>
             </Price>
-            <PrimaryBtn buttonContent={<BiShoppingBag />} className="add-to-cart-btn" />
+            {pathname === '/shop' &&
+              <PrimaryBtn buttonContent={<BiShoppingBag />} className="add-to-cart-btn" />
+            }
           </Footer>
         </Card.Body>
       </Card>
