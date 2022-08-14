@@ -5,8 +5,11 @@ import { BiExpandAlt, BiShoppingBag } from "react-icons/bi";
 import {MdOutlineFavoriteBorder, MdFavorite, MdDeleteOutline} from "react-icons/md";
 import {TbEdit} from "react-icons/tb";
 import PrimaryBtn from "./PrimaryBtn";
+import {useDispatch} from "react-redux";
+import {deleteProduct} from '../redux/productSlice';
 
 const ProductCard = ({product, favorite, setFavorite}) => {
+  const dispatch = useDispatch();
   // Check for pathname to render buttons
   const pathname = window.location.pathname;
 
@@ -21,6 +24,11 @@ const ProductCard = ({product, favorite, setFavorite}) => {
   const isFavorite = (product) => {
     return favorite.filter((item) => item._id === product._id).length > 0;
   };
+
+  // Delete product
+  // const deleteProduct = () => {
+  //   return dispatch(deleteProduct(product._id));
+  // }
 
   return (
     <CardWrapper>
@@ -42,7 +50,7 @@ const ProductCard = ({product, favorite, setFavorite}) => {
                 <MdOutlineFavoriteBorder/>
               )}
             </div> :
-            <div className="icon-wrapper">
+            <div className="icon-wrapper" onClick={() => dispatch(deleteProduct(product._id))}>
               <MdDeleteOutline/>
             </div>
           }
@@ -101,7 +109,6 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   svg {
-    cursor: pointer;
     width: 1.5em;
     height: 1.5em;
   }
@@ -109,6 +116,7 @@ const Header = styled.div`
     background-color: #fff;
     border-radius: 10px;
     padding: 0.5rem;
+    cursor: pointer;
   }
 `;
 

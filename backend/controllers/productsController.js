@@ -44,7 +44,7 @@ const addProduct = asyncHandler(async (req, res) => {
 const updateProduct = asyncHandler(async (req, res) => {
 	const reqBody = req.body;
 	const productID = req.params.id;
-	const userID = req.user.id;
+	const reqUser = req.user.id;
 	const product = await Product.findById(productID);
 
 	if(!product) {
@@ -59,7 +59,7 @@ const updateProduct = asyncHandler(async (req, res) => {
 	}
 
 	// Logged-in user can update own product
-	if(product.user.toString() !== userID) {
+	if(product.userID.toString() !== reqUser) {
 		res.status(401);
 		throw new Error('User not authorized.');
 	}
@@ -73,7 +73,7 @@ const updateProduct = asyncHandler(async (req, res) => {
 // DELETE /api/products/:id
 const deleteProduct = asyncHandler(async (req, res) => {
 	const productID = req.params.id;
-	const userID = req.user.id;
+	const reqUser = req.user.id;
 	const product = await Product.findById(productID);
 
 	if(!product) {
@@ -87,8 +87,8 @@ const deleteProduct = asyncHandler(async (req, res) => {
 		throw new Error('User not found.');
 	}
 
-	// Logged-in user can update own product
-	if(product.user.toString() !== userID) {
+	// Logged-in user can delete own product
+	if(product.userID.toString() !== reqUser) {
 		res.status(401);
 		throw new Error('User not authorized.');
 	}
