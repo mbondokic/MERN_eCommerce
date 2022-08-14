@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {Row, Col} from 'react-bootstrap';
 import PrimaryBtn from "../components/PrimaryBtn";
 import {HiOutlineViewGridAdd} from "react-icons/hi";
@@ -11,12 +11,15 @@ import {getMyProducts} from "../redux/productSlice";
 import Loader from "../components/Loader";
 import ProductCard from "../components/ProductCard";
 
+import {AddEditProvider, AddEditContext} from "../context/AddEditContext";
+
 const UserProducts = () => {
 	const {user} = useSelector(state => state.userStore);
 	const {products, isLoading, isError, isSuccess, message} = useSelector(state => state.productStore);
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
-
+	const [isEdit, setIsEdit] = useContext(AddEditContext);
+	
 	// Modal
 	const [show, setShow] = useState(false);
 	const handleClose = () => setShow(false);
@@ -38,30 +41,37 @@ const UserProducts = () => {
 		return <Loader />;
 	}
 
+	const addHandler = () => {
+		setIsEdit(false);
+		handleShow();
+	}
+
 	// TODO: close modal if success
 
 	return (
 		<>
-			<Row className="mt-5">
-				<Col md={12}>
-					<PrimaryBtn buttonContent="New product" icon={<HiOutlineViewGridAdd/>} onClick={handleShow}/>
-				</Col>
-			</Row>
-			<Row className="mt-5">
-				{products.length > 0 ?
-					products.map(product => {
-							return (
-								<Col md={4} key={product._id} className="mt-2 mb-3">
-									<ProductCard product={product} />
-								</Col>
-								)
-						})
-					:
-					<h3>No products to show.</h3>
-				}
-			</Row>
-			{/* Modal */}
-			<AddEditProductForm show={show} handleClose={handleClose} />
+			<AddEditProvider>
+				<Row className="mt-5">
+					<Col md={12}>
+						<PrimaryBtn buttonContent="New product" icon={<HiOutlineViewGridAdd/>} onClick={handleShow}/>
+					</Col>
+				</Row>
+				<Row className="mt-5">
+					{products.length > 0 ?
+						products.map(product => {
+								return (
+									<Col md={4} key={product._id} className="mt-2 mb-3">
+										<ProductCard product={product} openModal={handleShow} />
+									</Col>
+									)
+							})
+						:
+						<h3>No products to show.</h3>
+					}
+				</Row>
+				{/* Modal */}
+				<AddEditProductForm show={show} handleClose={handleClose} />
+			</AddEditProvider>
 		</>
 	);
 };

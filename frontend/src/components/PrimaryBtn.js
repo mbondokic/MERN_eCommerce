@@ -20,6 +20,8 @@ const StyledBtn = styled.button`
   display: inline-block;
 
   svg {
+    width: 1.5em;
+    height: 1.5em;
     margin-right: 10px;
   }
 
@@ -29,11 +31,6 @@ const StyledBtn = styled.button`
     background-color: #fff;
     color: #c292de;
     border: solid 2px #c292de;
-  }
-
-  svg {
-    width: 1.5em;
-    height: 1.5em;
   }
 
   /* @media (min-width: 576px) {

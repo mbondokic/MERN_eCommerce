@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import {useDispatch} from "react-redux";
 // Components
 import {FloatingLabel, Form, Modal} from "react-bootstrap";
@@ -10,10 +10,13 @@ import defaultProductImg from '../img/default_product_img.svg';
 // Functions
 import {addProduct} from '../redux/productSlice';
 
+import {AddEditContext} from "../context/AddEditContext";
+
 const AddEditProductForm = ({show, handleClose}) => {
+	const [isEdit, setIsEdit] = useContext(AddEditContext);
 	const [product, setProduct] = useState({
-	  imgUrl: defaultProductImg,
-  });
+	 	imgUrl: defaultProductImg,
+ 	});
 
 	const dispatch = useDispatch();
 
@@ -22,7 +25,7 @@ const AddEditProductForm = ({show, handleClose}) => {
 			...prevState,
 			[e.target.name]: e.target.value
 		}))
-		if(!product.imgUrl) {
+		if (!product.imgUrl) {
 			setProduct(product.imgUrl);
 		}
 	}
@@ -32,16 +35,21 @@ const AddEditProductForm = ({show, handleClose}) => {
 		dispatch(addProduct(product));
 	}
 
+	const closeModalHandler = () => {
+		setIsEdit(false);
+		handleClose();
+	}
+
 	return (
 		<Modal
 			show={show}
-			onHide={handleClose}
+			onHide={closeModalHandler}
 			backdrop="static"
 			keyboard={false}
 			centered
 		>
 			<Modal.Header closeButton>
-				<Modal.Title>Modal title</Modal.Title>
+				<Modal.Title>{isEdit ? 'Edit product' : 'Add product'}</Modal.Title>
 			</Modal.Header>
 			<Modal.Body>
 				<Form onSubmit={formSubmitHandler}>
@@ -50,7 +58,12 @@ const AddEditProductForm = ({show, handleClose}) => {
 							controlId="title"
 							label="* Title"
 						>
-							<Form.Control type="text" placeholder="Title" name="title" required onChange={handleChange}/>
+							<Form.Control type="text"
+														placeholder="Title"
+														name="title"
+														required
+														onChange={handleChange}
+														/>
 						</FloatingLabel>
 					</Form.Group>
 
@@ -82,7 +95,8 @@ const AddEditProductForm = ({show, handleClose}) => {
 														required
 														placeholder="Price"
 														name="price"
-														onChange={handleChange}/>
+														onChange={handleChange}
+							/>
 						</FloatingLabel>
 					</Form.Group>
 					<Form.Group className="mb-3" controlId="imgUrl">
@@ -91,10 +105,10 @@ const AddEditProductForm = ({show, handleClose}) => {
 														placeholder="Image URL"
 														name="imgUrl"
 														onChange={handleChange}
-														/>
+							/>
 						</FloatingLabel>
 					</Form.Group>
-					<PrimaryBtn buttonText="Add" type="submit" icon={<BsClipboardPlus/>} className="d-block ms-auto"/>
+					<PrimaryBtn buttonContent={isEdit ? 'Save' : 'Add'} type="submit" icon={<BsClipboardPlus/>} className="d-block ms-auto"/>
 				</Form>
 			</Modal.Body>
 		</Modal>

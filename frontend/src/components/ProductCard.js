@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useContext} from "react";
 import styled from "styled-components";
 import {Card} from "react-bootstrap";
 import { BiExpandAlt, BiShoppingBag } from "react-icons/bi";
@@ -7,8 +7,10 @@ import {TbEdit} from "react-icons/tb";
 import PrimaryBtn from "./PrimaryBtn";
 import {useDispatch} from "react-redux";
 import {deleteProduct} from '../redux/productSlice';
+import {AddEditContext} from "../context/AddEditContext";
 
-const ProductCard = ({product, favorite, setFavorite}) => {
+const ProductCard = ({product, favorite, setFavorite, openModal}) => {
+  const [isEdit, setIsEdit] = useContext(AddEditContext);
   const dispatch = useDispatch();
   // Check for pathname to render buttons
   const pathname = window.location.pathname;
@@ -25,21 +27,23 @@ const ProductCard = ({product, favorite, setFavorite}) => {
     return favorite.filter((item) => item._id === product._id).length > 0;
   };
 
-  // Delete product
-  // const deleteProduct = () => {
-  //   return dispatch(deleteProduct(product._id));
-  // }
+  const editHandler = () => {
+    setIsEdit(true);
+    openModal();
+  }
 
   return (
     <CardWrapper>
       <Card>
         <Header>
-          <div className="icon-wrapper">
-            {pathname === '/shop' ?
-              <BiExpandAlt /> :
+          {pathname === 'shop' ?
+            <div className="icon-wrapper">
+              <BiExpandAlt />
+            </div> :
+            <div className="icon-wrapper" onClick={editHandler}>
               <TbEdit />
-            }
-          </div>
+            </div>
+          }
           {pathname === '/shop' ?
             <div className="icon-wrapper" onClick={() =>
               isFavorite(product) ? removeFavorite(product) : addFavorite(product)
