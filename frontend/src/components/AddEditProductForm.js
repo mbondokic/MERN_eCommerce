@@ -11,8 +11,9 @@ import defaultProductImg from '../img/default_product_img.svg';
 import {addProduct} from '../redux/productSlice';
 
 import {AddEditContext} from "../context/AddEditContext";
+import toast from "react-hot-toast";
 
-const AddEditProductForm = ({show, handleClose}) => {
+const AddEditProductForm = ({show, handleClose, isSuccess}) => {
 	const [isEdit, setIsEdit] = useContext(AddEditContext);
 	const [product, setProduct] = useState({
 	 	imgUrl: defaultProductImg,
@@ -33,6 +34,8 @@ const AddEditProductForm = ({show, handleClose}) => {
 	const formSubmitHandler = (e) => {
 		e.preventDefault();
 		dispatch(addProduct(product));
+		toast.success(`Product added successfully.`);
+		closeModalHandler();
 	}
 
 	const closeModalHandler = () => {

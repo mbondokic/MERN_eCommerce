@@ -32,6 +32,10 @@ const ProductCard = ({product, favorite, setFavorite, openModal}) => {
     openModal();
   }
 
+  const deleteProductHandler = () => {
+    dispatch(deleteProduct(product._id));
+  }
+
   return (
     <CardWrapper>
       <Card>
@@ -54,7 +58,7 @@ const ProductCard = ({product, favorite, setFavorite, openModal}) => {
                 <MdOutlineFavoriteBorder/>
               )}
             </div> :
-            <div className="icon-wrapper" onClick={() => dispatch(deleteProduct(product._id))}>
+            <div className="icon-wrapper" onClick={deleteProductHandler}>
               <MdDeleteOutline/>
             </div>
           }

@@ -12,6 +12,7 @@ import Loader from "../components/Loader";
 import ProductCard from "../components/ProductCard";
 
 import {AddEditProvider, AddEditContext} from "../context/AddEditContext";
+import toast from "react-hot-toast";
 
 const UserProducts = () => {
 	const {user} = useSelector(state => state.userStore);
@@ -32,6 +33,7 @@ const UserProducts = () => {
 
 		if(isError) {
 			console.log(message);
+			toast.error(message);
 		}
 
 		dispatch(getMyProducts());
@@ -39,11 +41,6 @@ const UserProducts = () => {
 
 	if(isLoading) {
 		return <Loader />;
-	}
-
-	const addHandler = () => {
-		setIsEdit(false);
-		handleShow();
 	}
 
 	// TODO: close modal if success
@@ -60,7 +57,7 @@ const UserProducts = () => {
 					{products.length > 0 ?
 						products.map(product => {
 								return (
-									<Col md={4} key={product._id} className="mt-2 mb-3">
+									<Col md={3} key={product._id} className="mt-2 mb-3">
 										<ProductCard product={product} openModal={handleShow} />
 									</Col>
 									)
@@ -70,7 +67,7 @@ const UserProducts = () => {
 					}
 				</Row>
 				{/* Modal */}
-				<AddEditProductForm show={show} handleClose={handleClose} />
+				<AddEditProductForm show={show} handleClose={handleClose} isSuccess={isSuccess} />
 			</AddEditProvider>
 		</>
 	);
