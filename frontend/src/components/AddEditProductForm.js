@@ -13,12 +13,13 @@ import {addProduct, editMyProduct} from '../redux/productSlice';
 import {AddEditContext} from "../context/AddEditContext";
 import toast from "react-hot-toast";
 
-const AddEditProductForm = ({product, message, show, handleClose, editedProduct, setEditedProduct}) => {
+const AddEditProductForm = ({product, show, handleClose, editedProduct, setEditedProduct}) => {
 	const [isEdit, setIsEdit] = useContext(AddEditContext);
 	const [productData, setProductData] = useState({
 	 	imgUrl: defaultProductImg,
 		userToken: JSON.parse(localStorage.getItem('user')).token
  	});
+	const [isFormValid, setIsFormValid] = useState(true);
 
 	const dispatch = useDispatch();
 
@@ -27,25 +28,37 @@ const AddEditProductForm = ({product, message, show, handleClose, editedProduct,
 			 ...productData,
 			 [e.target.name]: e.target.value
 		});
+
 		if (!productData.imgUrl) {
 			setProductData(productData.imgUrl);
 		}
 
-		if(isEdit) {
-			setEditedProduct({...editedProduct, [e.target.name]: e.target.value})
-		}
+		setEditedProduct({
+			 ...editedProduct,
+			 [e.target.name]: e.target.value
+		})
 	}
 
 	const formSubmitHandler = (e) => {
 		e.preventDefault();
 
 		if(isEdit) {
-			editMyProductHandler();
+			dispatch(editMyProduct(editedProduct._id));
+			closeModalHandler();
 			// toast.success('Product edited successfully.' || message);
 		} else {
-			dispatch(addProduct(productData));
-			toast.success(`Product added successfully.`);
+			addProductHandler();
 		}
+	}
+
+	const addProductHandler = () => {
+		if(!productData.title || !productData.description || !productData.price) {
+			setIsFormValid(false);
+			toast.error('Please fill in all required fields.');
+			return;
+		}
+		dispatch(addProduct(productData));
+		toast.success(`Product added successfully.`);
 		closeModalHandler();
 	}
 
@@ -55,10 +68,10 @@ const AddEditProductForm = ({product, message, show, handleClose, editedProduct,
 		setEditedProduct('');
 	}
 
-	const editMyProductHandler = () => {
-		dispatch(editMyProduct(editedProduct._id));
-		handleClose();
-	}
+	// const editMyProductHandler = () => {
+	// 	dispatch(editMyProduct(editedProduct._id));
+	// 	handleClose();
+	// }
 
 	return (
 		<Modal
@@ -113,7 +126,6 @@ const AddEditProductForm = ({product, message, show, handleClose, editedProduct,
 					<Form.Group className="mb-3" controlId="price">
 						<FloatingLabel controlId="price" label="* Price">
 							<Form.Control type="number"
-														required
 														placeholder="Price"
 														name="price"
 														onChange={handleChange}
