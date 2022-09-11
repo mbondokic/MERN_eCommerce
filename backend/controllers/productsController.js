@@ -40,7 +40,7 @@ const addProduct = asyncHandler(async (req, res) => {
 })
 
 // Update product
-// PUT /api/products/:id
+// PUT /api/products/update/:id
 const updateProduct = asyncHandler(async (req, res) => {
 	const reqBody = req.body;
 	const productID = req.params.id;

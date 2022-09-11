@@ -34,14 +34,27 @@ const deleteProduct = async(productID, token) => {
 		}
 	}
 
-	const response = await axios.delete(`${API_URL}/${productID}`, config);
+	const response = await axios.delete(`${API_URL}/delete/${productID}`, config);
+	return response.data;
+}
+
+// Edit product
+const editMyProduct = async(productID, token) => {
+	const config = {
+		headers: {
+			Authorization: `Bearer ${token}`
+		}
+	}
+
+	const response = await axios.put(`${API_URL}/update/${productID}`, config);
 	return response.data;
 }
 
 const productService = {
 	addProduct,
 	getMyProducts,
-	deleteProduct
+	deleteProduct,
+	editMyProduct
 }
 
 export default productService;

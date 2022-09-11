@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {useDispatch} from "react-redux";
 // Components
 import {FloatingLabel, Form, Modal} from "react-bootstrap";
@@ -8,38 +8,55 @@ import {BsClipboardPlus} from "react-icons/bs";
 // Images
 import defaultProductImg from '../img/default_product_img.svg';
 // Functions
-import {addProduct} from '../redux/productSlice';
+import {addProduct, editMyProduct} from '../redux/productSlice';
 
 import {AddEditContext} from "../context/AddEditContext";
 import toast from "react-hot-toast";
 
-const AddEditProductForm = ({show, handleClose, isSuccess}) => {
+const AddEditProductForm = ({product, message, show, handleClose, editedProduct, setEditedProduct}) => {
 	const [isEdit, setIsEdit] = useContext(AddEditContext);
-	const [product, setProduct] = useState({
+	const [productData, setProductData] = useState({
 	 	imgUrl: defaultProductImg,
+		userToken: JSON.parse(localStorage.getItem('user')).token
  	});
 
 	const dispatch = useDispatch();
 
 	const handleChange = (e) => {
-		setProduct(prevState => ({
-			...prevState,
-			[e.target.name]: e.target.value
-		}))
-		if (!product.imgUrl) {
-			setProduct(product.imgUrl);
+		setProductData({
+			 ...productData,
+			 [e.target.name]: e.target.value
+		});
+		if (!productData.imgUrl) {
+			setProductData(productData.imgUrl);
+		}
+
+		if(isEdit) {
+			setEditedProduct({...editedProduct, [e.target.name]: e.target.value})
 		}
 	}
 
 	const formSubmitHandler = (e) => {
 		e.preventDefault();
-		dispatch(addProduct(product));
-		toast.success(`Product added successfully.`);
+
+		if(isEdit) {
+			editMyProductHandler();
+			// toast.success('Product edited successfully.' || message);
+		} else {
+			dispatch(addProduct(productData));
+			toast.success(`Product added successfully.`);
+		}
 		closeModalHandler();
 	}
 
 	const closeModalHandler = () => {
 		setIsEdit(false);
+		handleClose();
+		setEditedProduct('');
+	}
+
+	const editMyProductHandler = () => {
+		dispatch(editMyProduct(editedProduct._id));
 		handleClose();
 	}
 
@@ -64,8 +81,8 @@ const AddEditProductForm = ({show, handleClose, isSuccess}) => {
 							<Form.Control type="text"
 														placeholder="Title"
 														name="title"
-														required
 														onChange={handleChange}
+														defaultValue={editedProduct.title}
 														/>
 						</FloatingLabel>
 					</Form.Group>
@@ -85,10 +102,11 @@ const AddEditProductForm = ({show, handleClose, isSuccess}) => {
 							<Form.Control type="text"
 														as="textarea"
 														style={{height: '100px'}}
-														required
 														placeholder="Description"
 														name="description"
-														onChange={handleChange}/>
+														onChange={handleChange}
+														defaultValue={editedProduct.description}
+							/>
 						</FloatingLabel>
 					</Form.Group>
 
@@ -99,6 +117,7 @@ const AddEditProductForm = ({show, handleClose, isSuccess}) => {
 														placeholder="Price"
 														name="price"
 														onChange={handleChange}
+														defaultValue={editedProduct.price}
 							/>
 						</FloatingLabel>
 					</Form.Group>

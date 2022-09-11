@@ -11,7 +11,7 @@ import {getMyProducts} from "../redux/productSlice";
 import Loader from "../components/Loader";
 import ProductCard from "../components/ProductCard";
 
-import {AddEditProvider, AddEditContext} from "../context/AddEditContext";
+import {AddEditProvider} from "../context/AddEditContext";
 import toast from "react-hot-toast";
 
 const UserProducts = () => {
@@ -19,8 +19,7 @@ const UserProducts = () => {
 	const {products, isLoading, isError, isSuccess, message} = useSelector(state => state.productStore);
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
-	const [isEdit, setIsEdit] = useContext(AddEditContext);
-	
+	const [editedProduct, setEditedProduct] = useState({});
 	// Modal
 	const [show, setShow] = useState(false);
 	const handleClose = () => setShow(false);
@@ -37,13 +36,12 @@ const UserProducts = () => {
 		}
 
 		dispatch(getMyProducts());
-	}, [user, navigate, isError, message, dispatch]);
+	}, []);
+	//user, navigate, isError, message, dispatch
 
 	if(isLoading) {
 		return <Loader />;
 	}
-
-	// TODO: close modal if success
 
 	return (
 		<>
@@ -58,7 +56,8 @@ const UserProducts = () => {
 						products.map(product => {
 								return (
 									<Col md={3} key={product._id} className="mt-2 mb-3">
-										<ProductCard product={product} openModal={handleShow} />
+										<ProductCard product={product} openModal={handleShow} setEditedProduct={setEditedProduct}/>
+										<AddEditProductForm product={product} editedProduct={editedProduct} setEditedProduct={setEditedProduct} show={show} handleClose={handleClose} message={message}/>
 									</Col>
 									)
 							})
@@ -67,7 +66,7 @@ const UserProducts = () => {
 					}
 				</Row>
 				{/* Modal */}
-				<AddEditProductForm show={show} handleClose={handleClose} isSuccess={isSuccess} />
+				{/*<AddEditProductForm show={show} handleClose={handleClose} isSuccess={isSuccess} />*/}
 			</AddEditProvider>
 		</>
 	);

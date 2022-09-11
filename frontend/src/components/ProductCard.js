@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React, {useContext, useState} from "react";
 import styled from "styled-components";
 import {Card} from "react-bootstrap";
 import { BiExpandAlt, BiShoppingBag } from "react-icons/bi";
@@ -8,12 +8,13 @@ import PrimaryBtn from "./PrimaryBtn";
 import {useDispatch} from "react-redux";
 import {deleteProduct} from '../redux/productSlice';
 import {AddEditContext} from "../context/AddEditContext";
+import toast from "react-hot-toast";
 
-const ProductCard = ({product, favorite, setFavorite, openModal}) => {
+const ProductCard = ({product, favorite, setFavorite, openModal, setEditedProduct}) => {
   const [isEdit, setIsEdit] = useContext(AddEditContext);
   const dispatch = useDispatch();
   // Check for pathname to render buttons
-  const pathname = window.location.pathname;
+  let pathname = window.location.pathname;
 
   // On shop page
   const addFavorite = (product) => {
@@ -30,10 +31,12 @@ const ProductCard = ({product, favorite, setFavorite, openModal}) => {
   const editHandler = () => {
     setIsEdit(true);
     openModal();
+    setEditedProduct(product);
   }
 
   const deleteProductHandler = () => {
     dispatch(deleteProduct(product._id));
+    toast.success('Product deleted successfully.');
   }
 
   return (
